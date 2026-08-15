@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- The popup is a full-screen fragment on Firefox for Android, so it must lay
+         out like a real mobile page rather than a desktop panel. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page Font Size</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <p class="site" id="site">&nbsp;</p>
+
+      <output class="readout" id="readout" aria-live="polite">100%</output>
+
+      <div class="steppers">
+        <button type="button" id="down" class="step" aria-label="Decrease page size">−</button>
+        <button type="button" id="up" class="step" aria-label="Increase page size">+</button>
+      </div>
+
+      <button type="button" id="reset" class="secondary">Reset to 100%</button>
+
+      <p class="notice" id="notice" hidden></p>
+
+      <label class="toggle">
+        <input type="checkbox" id="overlay" />
+        <span>
+          Show on-page controls
+          <small>Floating − / + buttons on the page itself, so you can see the size change as you tap.</small>
+        </span>
+      </label>
+
+      <button type="button" id="done" class="done">Done</button>
+    </main>
+
+    <script src="../zoom-levels.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

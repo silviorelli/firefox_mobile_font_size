@@ -1,0 +1,137 @@
+:root {
+  --bg: #ffffff;
+  --fg: #15141a;
+  --muted: #5b5b66;
+  --surface: #f2f2f6;
+  --surface-active: #e3e3ea;
+  --border: #d7d7e0;
+  --accent: #8b5cf6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1b22;
+    --fg: #fbfbfe;
+    --muted: #b8b8c4;
+    --surface: #2b2a33;
+    --surface-active: #3a3944;
+    --border: #45444f;
+    --accent: #a78bfa;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.4 system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Comfortable on a phone, still sane in the narrow desktop panel. */
+  min-width: 260px;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
+.site {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.readout {
+  display: block;
+  font-size: 48px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.steppers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+button {
+  font: inherit;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:active:not([disabled]) {
+  background: var(--surface-active);
+}
+
+button[disabled] {
+  opacity: 0.4;
+}
+
+.step {
+  min-height: 72px;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.secondary,
+.done {
+  min-height: 48px;
+}
+
+.done {
+  border-color: transparent;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.notice {
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.toggle {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.toggle input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.toggle small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
