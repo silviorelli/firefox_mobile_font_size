@@ -26,11 +26,19 @@ Zoom runs from 50% to 300% along the same ladder desktop Firefox uses.
 ```shell
 asdf install                 # Node 24 LTS, per .tool-versions
 npm install
-npm run start:android        # requires adb + a connected device
 ```
 
-See [documentation/commands_cheatsheet.md](documentation/commands_cheatsheet.md) for
-the full device setup, and
+Firefox for Android never runs unsigned add-ons, so there are two ways onto a phone:
+
+```shell
+npm run start:android        # adb + USB cable; temporary, gone when Firefox closes
+npm run build                # or sign an .xpi and install it from the phone's debug menu
+```
+
+The `adb` route is the fast development loop; the signed `.xpi` is a permanent install
+and needs no cable. Both are written up, along with the two developer-mode toggles the
+`adb` route depends on, in
+[documentation/commands_cheatsheet.md](documentation/commands_cheatsheet.md). See
 [documentation/architecture.md](documentation/architecture.md) for how it works.
 
 ## Requirements

@@ -30,24 +30,54 @@ npx playwright test e2e/content.spec.js -g overlay  # one file, one pattern
 node --test --watch "tests/**/*.test.js"            # unit tests on save
 ```
 
-## Running on a real Android device
+## Getting it onto a phone
 
-One-time, on the machine:
+There are two routes and they do different jobs. Both exist because **Firefox for
+Android will not run an unsigned add-on**: `xpinstall.signatures.required` cannot be
+turned off on Release or Beta builds, so copying the folder across is never an option.
+
+| | `adb` route | Signed `.xpi` route |
+| --- | --- | --- |
+| For | The **development loop** — edit, reload, repeat. | **Real use**, and testing that it installs like a real add-on. |
+| Needs `adb` and a cable | Yes | No — any way of moving a file to the phone works |
+| Needs AMO credentials | No | Yes, signing happens on Mozilla's servers |
+| Signing | Bypassed — installs **temporarily** over the debug socket | Required |
+| Survives closing Firefox | **No**, the add-on disappears | Yes, it is a permanent install |
+| Turnaround per change | Seconds | A version bump plus a round trip to AMO |
+
+So: `adb` while building, signed `.xpi` to confirm the real install path and to put it
+on a phone you would rather not tether.
+
+### Route 1 — `adb`, temporary install
+
+**Two separate developer modes have to be on, in two different places.** Turning on
+one does not turn on the other, and `adb devices` will show nothing until both are.
+
+In **Android's** settings:
+
+1. **Settings → About phone** → tap **Build number** seven times, until it confirms
+   you are a developer.
+2. **Settings → System → Developer options** → enable **USB debugging**.
+
+In **Firefox's own** settings:
+
+3. **Settings → Advanced → Remote debugging via USB** → on. (This one is a normal
+   setting; it does not need the hidden debug menu from route 2.)
+
+Then plug in over USB, unlock the screen, and approve the *Allow USB debugging?*
+prompt — tick **Always allow from this computer**.
+
+On the machine:
 
 ```shell
-brew install --cask android-platform-tools   # provides adb
-```
-
-One-time, on the phone:
-
-1. Enable **Developer options**, then **USB debugging**.
-2. In Firefox: **Settings → Remote debugging via USB**.
-3. Plug in over USB and approve the debugging prompt.
-
-```shell
-adb devices                    # should list the device as "device", not "unauthorized"
+brew install --cask android-platform-tools   # provides adb, one time
+adb devices                                  # must say "device", not "unauthorized"
 npm run start:android
 ```
+
+`unauthorized` means the trust prompt was never shown or never accepted: unlock the
+screen and replug, and if it still does not appear, use **Developer options → Revoke
+USB debugging authorizations** and replug.
 
 Pick the APK to match the Firefox you have installed:
 
@@ -67,6 +97,25 @@ Notes that cost time if you do not know them:
 - The add-on installs into the **main profile**, temporarily, and is gone when you
   close Firefox. Temporary installation bypasses signing, so this works on Release.
 - If you unplug mid-run, clear leftovers with `--adb-remove-old-artifacts`.
+
+### Route 2 — signed `.xpi`, permanent install, no cable
+
+Here only **Firefox's** hidden debug menu matters. Android Developer options, USB
+debugging and `adb` are all irrelevant — nothing is plugged in.
+
+1. Sign the build (see [Signing](#signing)) → a `.xpi` lands in `web-ext-artifacts/`.
+2. Get that file onto the phone — cloud drive, email, download link, anything.
+3. On the phone: **Settings → About Firefox** → tap the Firefox logo **five times** in
+   quick succession → *Debug menu enabled*.
+4. Back out to **Settings → Install Extension from File** → pick the `.xpi` → **Add**.
+
+This route requires the add-on to declare an explicit ID, which we already do
+(`browser_specific_settings.gecko.id`, `page-font-size@geniodiligence.it`) —
+self-distributed extensions cannot use an AMO-generated one.
+
+The same hidden menu also offers **Custom Add-on Collection**, an older workaround
+that pulls add-ons from an AMO collection. We do not need it: it only serves *listed*
+add-ons and it silently uninstalls anything outside the collection.
 
 ### Debugging on device
 
@@ -98,16 +147,33 @@ content script:
 8. On `about:config`, the popup explains that the page cannot be zoomed rather than
    offering dead buttons.
 
-## Publishing
+## Signing
 
-`web-ext sign` needs AMO API credentials. Keep them in `.env` (already gitignored)
-and never inline them into a command:
+`web-ext sign` uploads to Mozilla and returns a signed `.xpi`. It needs AMO API
+credentials — keep them in `.env` (already gitignored) and never inline them into a
+command:
 
 ```shell
 set -a && source .env && set +a
+```
+
+**Unlisted** — self-distribution. No public listing, no review queue for a normal
+add-on like this one, and the result is the `.xpi` that route 2 above installs:
+
+```shell
+npx web-ext sign --source-dir=src --channel=unlisted \
+  --api-key="$AMO_JWT_ISSUER" --api-secret="$AMO_JWT_SECRET"
+```
+
+**Listed** — published on addons.mozilla.org, subject to review:
+
+```shell
 npx web-ext sign --source-dir=src --channel=listed \
   --api-key="$AMO_JWT_ISSUER" --api-secret="$AMO_JWT_SECRET"
 ```
 
 A first listed submission also needs `--amo-metadata=./amo-metadata.json` with at
 least `summary`, `categories` and `version.license`.
+
+AMO refuses a version it has already signed, so **bump `version` in
+`src/manifest.json`** before every signing run — including re-signs during testing.
