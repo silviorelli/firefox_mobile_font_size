@@ -135,7 +135,7 @@ debugging and `adb` are all irrelevant — nothing is plugged in.
 4. Back out to **Settings → Install Extension from File** → pick the `.xpi` → **Add**.
 
 This route requires the add-on to declare an explicit ID, which we already do
-(`browser_specific_settings.gecko.id`, `page-font-size@geniodiligence.it`) —
+(`browser_specific_settings.gecko.id`, `page-font-size@relli.it`) —
 self-distributed extensions cannot use an AMO-generated one.
 
 The same hidden menu also offers **Custom Add-on Collection**, an older workaround

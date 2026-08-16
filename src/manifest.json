@@ -5,7 +5,7 @@
   "description": "Zoom web pages in and out per site, the Ctrl+ / Ctrl- that Firefox for Android never had.",
   "browser_specific_settings": {
     "gecko": {
-      "id": "page-font-size@geniodiligence.it",
+      "id": "page-font-size@relli.it",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
         "required": ["none"]
