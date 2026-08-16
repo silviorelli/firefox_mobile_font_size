@@ -13,7 +13,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "src", "icons");
-const SIZES = [16, 32, 48, 96];
+// Android renders the Extensions row icon at high density, so 48 and 96 cover it.
+// The 16 and 32 sizes existed for the desktop toolbar, which this extension does
+// not target.
+const SIZES = [48, 96];
 const COLOR = [0x8b, 0x5c, 0xf6]; // violet-500: legible on both light and dark menus
 const SUPERSAMPLE = 4;
 

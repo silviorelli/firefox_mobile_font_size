@@ -12,7 +12,7 @@ locale.
 | Field | Value |
 | --- | --- |
 | Distribution | **On this site** (listed) |
-| Name | `Page Font Size` |
+| Name | `Page Font Size Mobile` |
 | Category | **Appearance** (`appearance`) |
 | Licence | **MIT** |
 | Homepage / Support site | `https://github.com/silviorelli/firefox_mobile_font_size` |
@@ -35,7 +35,7 @@ Firefox on desktop has Ctrl+ and Ctrl- to make a page bigger or smaller. Firefox
 • Settings → Accessibility → Font Size is a single global slider. It applies to every site at once and needs a page reload.
 • Pinch-to-zoom magnifies without reflowing, so lines run off the edge and you end up scrolling sideways to read a sentence.
 
-Page Font Size gives you a proper per-site zoom instead.
+Page Font Size Mobile gives you a proper per-site zoom instead.
 
 WHAT IT DOES
 
@@ -47,7 +47,7 @@ WHAT IT DOES
 
 HOW TO USE IT
 
-Open the ⋮ menu → Extensions → Page Font Size, then tap − or + . Press Back to return to the page at its new size. Turn on "Show on-page controls" in the same panel if you would rather adjust the page while looking at it.
+Open the ⋮ menu → Extensions → Page Font Size Mobile, then tap − or + . Press Back to return to the page at its new size. Turn on "Show on-page controls" in the same panel if you would rather adjust the page while looking at it.
 
 PRIVACY
 
@@ -111,12 +111,22 @@ Testing: `npm test` (unit), `npm run test:e2e` (Playwright), `npm run lint` (web
 Set from `browser_specific_settings` in the manifest, so AMO picks it up from the
 package — nothing to fill in by hand:
 
-- Firefox desktop **140.0+**
-- Firefox for Android **142.0+**
+- Firefox for Android **142.0+** — the target
+- Firefox desktop **140.0+** — not the target, but not excludable either
 
 Both floors come from `data_collection_permissions`, which `addons-linter` now
 requires and which needs those versions. `gecko_android` is present, which is what
 makes AMO list the add-on for Android at all.
+
+**This add-on cannot be made Android-only.** `gecko_android` adds Android
+compatibility; there is no key that removes desktop. The `gecko` key cannot simply be
+dropped either — it carries the add-on `id` and `data_collection_permissions`. AMO's
+per-version compatibility UI only sets a min/max *version* range per application, and
+it locks the Android side precisely when `gecko_android` is used.
+
+So desktop Firefox 140+ will still be able to install it. The name, the summary and
+the description are what tell people it is built for the phone; the extension does
+work on desktop, it is simply not what it is designed or tested for.
 
 ## Screenshots
 

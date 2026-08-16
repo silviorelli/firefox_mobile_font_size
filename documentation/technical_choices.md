@@ -99,7 +99,25 @@ floors are ever lowered.
 not: without it AMO assumes the extension is desktop-only and will not list it for
 Android.
 
-## 5. Playwright cannot load a Firefox extension — what we test instead
+## 5. "Android only" is not expressible — the name carries it instead
+
+The extension targets Firefox for Android and nothing else, but **that cannot be
+declared.** `gecko_android` *adds* Android compatibility and there is no inverse key
+that removes desktop. Dropping `gecko` is not an option either: it holds the add-on
+`id` and `data_collection_permissions`. AMO's per-version compatibility screen only
+sets a min/max version range per application, and it locks the Android side exactly
+when `gecko_android` is in use.
+
+Desktop Firefox 140+ can therefore still install it, and it will work — full-page CSS
+`zoom` is not Android-specific. What is Android-specific is everything the design was
+bent around: the single Extensions menu row, the full-screen popup, and reflow
+mattering more than magnification. The product name (`Page Font Size Mobile`), the
+summary and the description are the only honest signal available.
+
+Consequently the icon set is 48 and 96 only. The 16 and 32 sizes are desktop toolbar
+sizes; 16 was never referenced by the manifest at all and was shipping as dead weight.
+
+## 6. Playwright cannot load a Firefox extension — what we test instead
 
 AGENTS.md mandates Playwright for end-to-end tests. **Playwright cannot install a
 WebExtension in Firefox**: its docs state extensions "only work in Chromium when
@@ -135,7 +153,7 @@ ago) — not a dependency worth taking to satisfy the letter of a rule. A
 genuinely install the extension in desktop Firefox, and is the natural next step if
 install-level coverage becomes worth a second browser-automation dependency.
 
-## 6. Zero runtime dependencies
+## 7. Zero runtime dependencies
 
 Plain JS, HTML and CSS with no build step: `web-ext build` only zips. Per AGENTS.md's
 dependency policy, the only dev dependencies are `web-ext` (required to lint, run and

@@ -114,7 +114,7 @@ Listing text to paste into the form: [amo-listing.md](amo-listing.md).
 npm test && npm run lint && npm run test:e2e
 npm run start:android                        # then walk the manual checks
 rm -rf web-ext-artifacts && npm run build
-unzip -l web-ext-artifacts/page_font_size-<version>.zip   # 13 files, nothing else
+unzip -l web-ext-artifacts/page_font_size_mobile-<version>.zip   # 11 files, nothing else
 git tag -a v<version> -m "..." && git push origin v<version>
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "firefox-mobile-font-size",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Per-site page zoom for Firefox for Android, the Ctrl+/Ctrl- that mobile Firefox never had.",
   "private": true,
   "license": "MIT",

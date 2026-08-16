@@ -1,4 +1,4 @@
-# Page Font Size
+# Page Font Size Mobile
 
 Per-site page zoom for **Firefox for Android** — the `Ctrl +` / `Ctrl -` that mobile
 Firefox never had.
@@ -11,7 +11,7 @@ navigations and restarts, and it reflows the page so text rewraps to the screen.
 
 ## Using it
 
-**⋮ → Extensions → Page Font Size** opens the controls: `−`, the current
+**⋮ → Extensions → Page Font Size Mobile** opens the controls: `−`, the current
 percentage, `+`, and Reset. The zoom applies immediately; press Back to see the page.
 
 Firefox for Android renders extension popups full-screen, so the page is hidden while

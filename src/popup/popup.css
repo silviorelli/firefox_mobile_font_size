@@ -37,8 +37,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* Comfortable on a phone, still sane in the narrow desktop panel. */
-  min-width: 260px;
   max-width: 520px;
   margin: 0 auto;
   padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Page Font Size",
-  "version": "1.1.0",
-  "description": "Zoom web pages in and out per site, the Ctrl+ / Ctrl- that Firefox for Android never had.",
+  "name": "Page Font Size Mobile",
+  "version": "1.2.0",
+  "description": "Per-site page zoom for Firefox for Android, the Ctrl+ / Ctrl- that mobile Firefox never had.",
   "browser_specific_settings": {
     "gecko": {
       "id": "page-font-size@relli.it",
@@ -22,10 +22,9 @@
   "permissions": ["storage"],
   "host_permissions": ["<all_urls>"],
   "action": {
-    "default_title": "Page Font Size",
+    "default_title": "Page Font Size Mobile",
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "32": "icons/icon-32.png",
       "48": "icons/icon-48.png",
       "96": "icons/icon-96.png"
     }

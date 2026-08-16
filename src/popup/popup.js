@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * The popup reached from ⋮ → Extensions → Page Font Size.
+ * The popup reached from ⋮ → Extensions → Page Font Size Mobile.
  *
  * It never messages the tab directly: it writes to storage.local and the content
  * script reacts to storage.onChanged. That keeps one code path for every way the

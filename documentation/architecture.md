@@ -6,7 +6,7 @@ There is no background page. Everything is a content script plus a popup, wired
 together through `storage.local`.
 
 ```
-  ⋮ → Extensions → Page Font Size
+  ⋮ → Extensions → Page Font Size Mobile
             │
             ▼
   ┌─────────────────────┐
