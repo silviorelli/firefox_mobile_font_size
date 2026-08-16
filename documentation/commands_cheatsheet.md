@@ -79,6 +79,16 @@ npm run start:android
 screen and replug, and if it still does not appear, use **Developer options → Revoke
 USB debugging authorizations** and replug.
 
+**Device selection.** `web-ext` will not pick a device on its own even when exactly
+one is attached — it fails with `UsageError: Select an android device using
+--android-device=<name>`. `web-ext-config.mjs` resolves the serial from `adb devices`
+so `npm run start:android` needs no arguments. With several devices attached it
+cannot guess, so name the one you want:
+
+```shell
+ADB_DEVICE=5B220DLCR000P0 npm run start:android   # or --adb-device=<id> on the CLI
+```
+
 Pick the APK to match the Firefox you have installed:
 
 | Channel | Package |
@@ -93,10 +103,25 @@ npx web-ext run -t firefox-android --adb-device <id> --firefox-apk org.mozilla.f
 
 Notes that cost time if you do not know them:
 
-- **At least one tab must be open** or the extension will not load.
+- **Unlock the phone and keep it awake**, with Firefox in the foreground and **at
+  least one tab open**. `web-ext` restarts Firefox itself, then waits for a browsing
+  context; a locked or sleeping screen never gives it one, so it hangs and Node
+  eventually bails out with `exit code 13` (*unsettled top-level await*) — which says
+  nothing about the real cause.
 - The add-on installs into the **main profile**, temporarily, and is gone when you
   close Firefox. Temporary installation bypasses signing, so this works on Release.
 - If you unplug mid-run, clear leftovers with `--adb-remove-old-artifacts`.
+
+When a run hangs, these three tell you which layer is at fault:
+
+```shell
+adb shell dumpsys window | grep -E 'mAwake|mDreamingLockscreen'   # asleep or locked?
+adb shell pidof org.mozilla.firefox                               # Firefox running?
+adb shell cat /proc/net/unix | grep firefox                       # RDP socket present?
+```
+
+A missing `@org.mozilla.firefox/firefox-debugger-socket` is the one that really means
+**Remote debugging via USB** is off.
 
 ### Route 2 — signed `.xpi`, permanent install, no cable
 
