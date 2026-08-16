@@ -172,6 +172,36 @@ content script:
 8. On `about:config`, the popup explains that the page cannot be zoomed rather than
    offering dead buttons.
 
+## Releasing
+
+The listing text lives in [amo-listing.md](amo-listing.md) — summary, description,
+category, licence and the reviewer notes, ready to paste into the submission form.
+
+1. Bump `version` in **both** `src/manifest.json` and `package.json`. The manifest is
+   the one that counts; `package.json` is kept in step so the two cannot drift. AMO
+   refuses a version it has already seen, so this is not optional.
+2. `npm test && npm run lint && npm run test:e2e` — all three green.
+3. `npm run start:android` on an unlocked phone, then walk the manual checklist above.
+   Nothing else covers the Android behaviour.
+4. `rm -rf web-ext-artifacts` then `npm run build`, so the directory holds exactly one
+   zip and the wrong version cannot be uploaded by accident.
+5. Check what is actually in it:
+
+   ```shell
+   unzip -l web-ext-artifacts/page_font_size-<version>.zip
+   ```
+
+   Expect `manifest.json` at the right version, the three content scripts, `popup/`
+   and `icons/` — and nothing else. No `node_modules`, no `.env`, no tests.
+6. Upload at <https://addons.mozilla.org/developers/addon/submit/>, or sign from the
+   CLI as below.
+7. Tag the release: `git tag -a v<version> -m "..." && git push origin v<version>`.
+
+Two answers the form asks for that are easy to get wrong, both settled in
+[amo-listing.md](amo-listing.md): **no** privacy policy is needed (the manifest
+declares it collects nothing), and **no** source upload is needed (there is no build
+step, so the package already is the source).
+
 ## Signing
 
 `web-ext sign` uploads to Mozilla and returns a signed `.xpi`. It needs AMO API
