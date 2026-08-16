@@ -54,4 +54,4 @@ and the popup hides the page. Each is documented with sources in
 
 ## Licence
 
-MPL-2.0
+MIT — see [LICENSE](LICENSE).
