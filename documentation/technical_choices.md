@@ -18,8 +18,10 @@ row**, under ⋮ → Extensions, and that row is our `action`. Everything else i
 - **No menu API.** [`browser.menus`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus)
   is `version_added: false` for *every* member on Android, including the `tools_menu`
   and `action` context types. There is no way to add entries to the main app menu.
-- **No keyboard shortcuts.** The `commands` namespace is entirely absent on Android,
-  so there is no mobile equivalent of binding `Ctrl +`.
+- **No keyboard shortcuts API.** The `commands` namespace is entirely absent on
+  Android, so `Ctrl +` cannot be bound at the browser level. The content script
+  listens for `keydown` on the page instead, which covers a hardware keyboard while
+  the page has focus.
 - `page_action` lands in the same Extensions list with no advantage, and is de-facto
   legacy; `sidebar_action` is unsupported on Android.
 

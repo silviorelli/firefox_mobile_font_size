@@ -43,7 +43,6 @@
         apply(direction > 0 ? ZoomLevels.stepUp(factor) : ZoomLevels.stepDown(factor));
       },
       onReset: () => apply(ZoomLevels.DEFAULT),
-      onHide: () => browser.storage.local.set({ [ZoomLevels.OVERLAY_KEY]: false }),
     });
     PageZoomOverlay.update(factor);
   }
@@ -81,6 +80,25 @@
       attributeFilter: ["style"],
     });
   }
+
+  /**
+   * Ctrl + / Ctrl - / Ctrl 0 from a hardware keyboard. The `commands` API does not
+   * exist on Android, so this listens on the page itself: it only fires while the
+   * page has focus, which is also when desktop Firefox's shortcuts apply.
+   */
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      if (!event.ctrlKey || event.altKey || event.metaKey) return;
+      const action = ZoomLevels.keyAction(event.key);
+      if (action === null) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (action === 0) apply(ZoomLevels.DEFAULT);
+      else apply(action > 0 ? ZoomLevels.stepUp(factor) : ZoomLevels.stepDown(factor));
+    },
+    true,
+  );
 
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;

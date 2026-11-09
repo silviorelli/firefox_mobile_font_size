@@ -94,3 +94,13 @@ test("pages we cannot meaningfully zoom have no storage key", () => {
     assert.equal(ZoomLevels.storageKeyFor(url), null, `expected no key for ${url}`);
   }
 });
+
+test("keyAction maps Ctrl+ keys like desktop Firefox", () => {
+  assert.equal(ZoomLevels.keyAction("+"), 1);
+  assert.equal(ZoomLevels.keyAction("="), 1);
+  assert.equal(ZoomLevels.keyAction("-"), -1);
+  assert.equal(ZoomLevels.keyAction("_"), -1);
+  assert.equal(ZoomLevels.keyAction("0"), 0);
+  assert.equal(ZoomLevels.keyAction("a"), null);
+  assert.equal(ZoomLevels.keyAction("Enter"), null);
+});

@@ -68,6 +68,18 @@ var ZoomLevels = (function () {
     return KEY_PREFIX + parsed.origin;
   }
 
+  /**
+   * What a Ctrl+<key> press does: 1 zooms in, -1 zooms out, 0 resets, null is not
+   * ours. Takes `KeyboardEvent.key`, so it follows the keyboard layout; "=" is the
+   * unshifted "+" key on US layouts, as on desktop Firefox.
+   */
+  function keyAction(key) {
+    if (key === "+" || key === "=") return 1;
+    if (key === "-" || key === "_") return -1;
+    if (key === "0") return 0;
+    return null;
+  }
+
   return {
     STEPS,
     MIN,
@@ -81,6 +93,7 @@ var ZoomLevels = (function () {
     isDefault,
     toPercent,
     storageKeyFor,
+    keyAction,
   };
 })();
 

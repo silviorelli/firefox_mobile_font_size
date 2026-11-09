@@ -17,7 +17,11 @@ percentage, `+`, and Reset. The zoom applies immediately; press Back to see the 
 Firefox for Android renders extension popups full-screen, so the page is hidden while
 you are adjusting it. If you would rather see the size change as you tap, switch on
 **Show on-page controls** in the popup — a small floating `− 140% +` bar appears on
-the page itself. It is **off by default**, and its `×` button switches it back off.
+the page itself. It is **off by default**. Its `›` button tucks the bar into a small
+tab on the edge of that page (tap the tab to bring it back); turning the controls off
+for every site is done from the popup.
+
+With a hardware keyboard, `Ctrl +`, `Ctrl -` and `Ctrl 0` work as on desktop.
 
 Zoom runs from 50% to 300% along the same ladder desktop Firefox uses.
 

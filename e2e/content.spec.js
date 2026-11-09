@@ -127,16 +127,87 @@ test.describe("content script", () => {
     await expect.poll(() => storedZoom(page)).toBe(1);
   });
 
-  test("the overlay's hide button switches the overlay off everywhere", async ({ page }) => {
+  test("minimizing leaves a tab on this page and keeps the overlay switched on", async ({ page }) => {
     await installBrowserStub(page, { storage: { overlayEnabled: true } });
     await page.goto(FIXTURE);
     await loadContentScripts(page);
     await expect(page.locator(OVERLAY_HOST)).toHaveCount(1);
 
-    await clickOverlayButton(page, "Hide on-page controls");
+    await clickOverlayButton(page, "Minimize on-page controls");
+    expect(await page.evaluate(() => PageZoomOverlay.isMinimized())).toBe(true);
+    await expect(page.locator(OVERLAY_HOST)).toHaveCount(1);
+    expect(await page.evaluate(() => window.__zoomStore.overlayEnabled)).toBe(true);
 
-    await expect(page.locator(OVERLAY_HOST)).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => window.__zoomStore.overlayEnabled)).toBe(false);
+    // The tab hugs the right edge of the viewport.
+    const { right, width } = await page.evaluate((selector) => {
+      const rect = document.querySelector(selector).getBoundingClientRect();
+      return { right: rect.right, width: rect.width };
+    }, OVERLAY_HOST);
+    const viewportWidth = await page.evaluate(() => window.visualViewport.width);
+    expect(right).toBeCloseTo(viewportWidth, 0);
+    expect(width).toBeLessThan(40);
+
+    await clickOverlayButton(page, "Show on-page controls");
+    expect(await page.evaluate(() => PageZoomOverlay.isMinimized())).toBe(false);
+  });
+
+  test("the bar sits at the bottom-right of the visible viewport at any page zoom", async ({ page }) => {
+    await page.setViewportSize({ width: 420, height: 720 });
+    await installBrowserStub(page, { originZoom: 2, storage: { overlayEnabled: true } });
+    await page.goto(FIXTURE);
+    await loadContentScripts(page);
+    await expect.poll(() => rootZoom(page)).toBe("2");
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+    const geometry = await page.evaluate((selector) => {
+      const rect = document.querySelector(selector).getBoundingClientRect();
+      const vv = window.visualViewport;
+      return { right: rect.right, bottom: rect.bottom, height: rect.height, vw: vv.width, vh: vv.height };
+    }, OVERLAY_HOST);
+    expect(geometry.right).toBeCloseTo(geometry.vw - 12, 0);
+    expect(geometry.bottom).toBeCloseTo(geometry.vh - 16, 0);
+    // Constant physical size: 48px buttons plus a 1px border, not doubled by the zoom.
+    expect(geometry.height).toBeCloseTo(50, 0);
+  });
+
+  test("while pinch-zoomed the bar follows the visual viewport at its normal size", async ({ page }) => {
+    await page.setViewportSize({ width: 400, height: 800 });
+    await installBrowserStub(page, { storage: { overlayEnabled: true } });
+    await page.goto(FIXTURE);
+    // A visual viewport zoomed 2x into the middle of the page. Playwright cannot
+    // pinch, so the API the overlay reads is faked.
+    await page.evaluate(() => {
+      const fake = new EventTarget();
+      Object.assign(fake, { scale: 2, offsetLeft: 100, offsetTop: 200, width: 200, height: 400 });
+      Object.defineProperty(window, "visualViewport", { value: fake, configurable: true });
+    });
+    await loadContentScripts(page);
+    await expect(page.locator(OVERLAY_HOST)).toHaveCount(1);
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+    const rect = await page.evaluate((selector) => {
+      const r = document.querySelector(selector).getBoundingClientRect();
+      return { right: r.right, bottom: r.bottom, height: r.height };
+    }, OVERLAY_HOST);
+    // Visible area ends at x=300, y=600; the gaps shrink with the 0.5 counter-scale.
+    expect(rect.right).toBeCloseTo(300 - 6, 0);
+    expect(rect.bottom).toBeCloseTo(600 - 8, 0);
+    expect(rect.height).toBeCloseTo(25, 0);
+  });
+
+  test("Ctrl +, Ctrl - and Ctrl 0 step and reset the zoom", async ({ page }) => {
+    await installBrowserStub(page);
+    await page.goto(FIXTURE);
+    await loadContentScripts(page);
+
+    await page.keyboard.press("Control+Equal");
+    await expect.poll(() => rootZoom(page)).toBe("1.1");
+    await page.keyboard.press("Control+Equal");
+    await expect.poll(() => storedZoom(page)).toBe(1.2);
+    await page.keyboard.press("Control+Minus");
+    await expect.poll(() => rootZoom(page)).toBe("1.1");
+    await page.keyboard.press("Control+Digit0");
+    await expect.poll(() => rootZoom(page)).toBe("");
   });
 
   test("switching the overlay on from the popup makes it appear without a reload", async ({ page }) => {

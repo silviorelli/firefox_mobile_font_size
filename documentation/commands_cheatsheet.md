@@ -102,8 +102,10 @@ overlay or the content script:
 4. Navigate, then fully restart Firefox → zoom persists.
 5. Other sites unaffected, each with its own level.
 6. Overlay on → constant physical size at every zoom, adjusts live.
-7. Overlay `×` → off on other tabs and after a restart.
-8. `about:config` → popup explains, rather than offering dead buttons.
+7. Overlay `›` → edge tab on this page only; tap it → bar back. Other tabs keep the bar.
+8. Scroll so the toolbar hides and shows → the bar stays in the same place at rest.
+9. Hardware keyboard: `Ctrl +`, `Ctrl -`, `Ctrl 0`.
+10. `about:config` → popup explains, rather than offering dead buttons.
 
 ## Releasing
 

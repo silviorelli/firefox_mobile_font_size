@@ -34,7 +34,7 @@ together through `storage.local`.
             │  storage.local.set
   ┌─────────────────────┐
   │ overlay.js          │  optional, off by default
-  │  − 140% + ×         │  closed shadow root
+  │  − 140% + ›         │  closed shadow root
   └─────────────────────┘
 ```
 
@@ -55,7 +55,7 @@ to keep alive.
 | --- | --- |
 | `src/zoom-levels.js` | The zoom ladder, step/clamp arithmetic, and origin→storage-key derivation. Pure: no `browser.*`, no DOM. Shared verbatim by the popup, the content script and the unit tests. |
 | `src/content.js` | Reads the stored factor, sets `zoom` on `<html>`, keeps it in sync, mounts/unmounts the overlay. |
-| `src/overlay.js` | The optional on-page `− % + ×` bar, inside a closed shadow root. |
+| `src/overlay.js` | The optional on-page `− % + ›` bar (› minimizes it to an edge tab for the page), inside a closed shadow root. |
 | `src/popup/` | The UI behind the Extensions menu row. |
 | `tools/make-icons.mjs` | Renders `src/icons/*.png` from stroke geometry, so the icon is reviewable in a diff. |
 | `tools/serve.mjs` | Static server for the Playwright suite (`node:http` only). |
@@ -99,6 +99,18 @@ The overlay is the only way to get live feedback. It is off by default.
   including the overlay — scales. The host sets `zoom: 1 / pageZoom` to cancel that,
   keeping the controls a constant physical size and their fixed offsets constant at
   every zoom level.
+- **Plain px offsets, no `env(safe-area-inset-bottom)`.** Firefox for Android changes
+  that inset as its dynamic toolbar shows and hides, so an `env()`-based offset made
+  the bar sit ~20 CSS px higher whenever the toolbar was showing. Plain `bottom`/`right`
+  offsets are applied by the compositor and stay put (measured on a Pixel 9 Pro Fold,
+  Fenix 159: same position with the toolbar shown and hidden).
+- **Pinch-zoom.** `position: fixed` anchors to the layout viewport, so after a
+  pinch-zoom the bar would be magnified or off-screen. While `visualViewport.scale`
+  is not 1, `place()` adds a transform that moves the bar to the visible bottom-right
+  corner and counter-scales it. At scale 1 there is no transform at all.
+- **Minimize, not hide.** `›` collapses the bar to a small tab on the right edge for
+  the current page only (in memory, not stored), so the controls cannot be lost by
+  accident. Switching them off everywhere is only possible from the popup.
 - `PageZoomOverlay.getShadowRoot()` exists for the end-to-end tests. It is not a hole
   in the closed root: content scripts run in an isolated world, so page script cannot
   see `PageZoomOverlay` at all.
